@@ -26,3 +26,6 @@
     1、kubectl get componentstatuses
    
     2、kubectl get nodes
+
+即便如此，我们还并没有真正的部署完kubernets。 还需要部署kube-dns、kube-dashboard、ingress不过这些东西，将比之前的安装就简单多了。
+

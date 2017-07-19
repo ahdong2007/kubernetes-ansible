@@ -15,30 +15,3 @@
 
 5、运行全部通过以后，需要手动对minions进行授权。方法如下：
 
-[root@vm172-31-0-19 kubernetes]# bin/kubectl get csr
-NAME        AGE       REQUESTOR           CONDITION
-csr-wgvgb   6m        kubelet-bootstrap   Pending
-csr-z6t53   6m        kubelet-bootstrap   Pending
-
-[root@vm172-31-0-19 kubernetes]# bin/kubectl certificate approve csr-wgvgb
-certificatesigningrequest "csr-wgvgb" approved
-[root@vm172-31-0-19 kubernetes]# bin/kubectl certificate approve csr-z6t53
-certificatesigningrequest "csr-z6t53" approved
-
-[root@vm172-31-0-19 kubernetes]# bin/kubectl get csr
-NAME        AGE       REQUESTOR           CONDITION
-csr-wgvgb   8m        kubelet-bootstrap   Approved,Issued
-csr-z6t53   8m        kubelet-bootstrap   Approved,Issued
-
-[root@vm172-31-0-19 kubernetes]# bin/kubectl get componentstatuses
-NAME                 STATUS    MESSAGE              ERROR
-scheduler            Healthy   ok                   
-etcd-0               Healthy   {"health": "true"}   
-controller-manager   Healthy   ok                   
-[root@vm172-31-0-19 kubernetes]# 
-[root@vm172-31-0-19 kubernetes]# bin/kubectl get nodes
-NAME          STATUS    AGE       VERSION
-172.31.0.25   Ready     5m        v1.6.7
-172.31.0.30   Ready     5m        v1.6.7
-[root@vm172-31-0-19 kubernetes]# 
-

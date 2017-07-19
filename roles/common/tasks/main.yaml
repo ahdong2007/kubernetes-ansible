@@ -1,0 +1,55 @@
+---
+
+- name: 关闭selinux
+  selinux: state=disabled
+
+- name: 修改主机名
+  hostname: name={{ hostname }}
+
+- name: 关闭防火墙
+  systemd: name=firewalld state=stopped enabled=no
+  
+- name: YUM安装docker\flannel\ntp 服务
+  yum: name={{ item }} state=latest
+  with_items:
+    - docker
+    - flannel
+    - ntp
+
+- name: 修改docker存储为overlay
+  lineinfile: path=/etc/sysconfig/docker-storage regexp='DOCKER_STORAGE_OPTIONS=' line='DOCKER_STORAGE_OPTIONS= --storage-driver=overlay'
+
+- name: 将docker\flanneld\NTPD 设置为开机器启动
+  service: name={{ item }} enabled=yes
+  with_items:
+    - docker
+    - flanneld
+    - ntpd
+
+- name: 拷贝flanneld 配置文件
+  template: src=flanneld.j2 dest=/etc/sysconfig/flanneld
+
+- name: 启动NTP服务
+  service: name={{ item }} state=started
+  with_items:
+    - ntpd
+
+- name: 创建kubernetes SSL 目录
+  file: path=/etc/kubernetes/ssl state=directory 
+
+- name: 拷贝kubernets SSL 文件
+  copy: src={{ item }} dest=/etc/kubernetes/ssl/
+  with_items:
+    - admin-key.pem
+    - admin.pem
+    - ca.csr
+    - ca-key.pem
+    - ca.pem
+    - ca-config.json
+
+- name: 下载 CFSSL 工具
+  get_url: url=https://pkg.cfssl.org/R1.2/{{ item }}_linux-amd64 dest=/usr/bin/{{ item }} mode=0755
+  with_items:
+    - cfssl
+    - cfssljson
+    - cfssl-certinfo

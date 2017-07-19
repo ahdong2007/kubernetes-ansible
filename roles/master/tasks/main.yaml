@@ -1,0 +1,63 @@
+---
+
+- name: 拷贝kubernets 密码生成json文件
+  template: src=kubernetes-csr.json dest=/etc/kubernetes/ssl/
+  tags: master
+
+- name: 生成kubernetes 密钥
+  shell: cfssl gencert -ca=/etc/kubernetes/ssl/ca.pem -ca-key=/etc/kubernetes/ssl/ca-key.pem -config=/etc/kubernetes/ssl/ca-config.json -profile=kubernetes /etc/kubernetes/ssl/kubernetes-csr.json | cfssljson -bare /etc/kubernetes/ssl/kubernetes
+
+- name: 生成令牌文件
+  shell: echo "{{ BOOTSTRAP_TOKEN }},kubelet-bootstrap,10001,"system:kubelet-bootstrap"" > /etc/kubernetes/token.csv
+  tags: master
+
+- name: 创建 kube-apiserver\kube-controller-manager\kube-scheduler 服务日志目录
+  file: path=/var/log/kubernetes/{{ item }} state=directory
+  with_items:
+    - kube-apiserver
+    - kube-controller-manager
+    - kube-scheduler
+  tags: master
+
+- name: 拷贝服务启动文件
+  template: src={{ item }} dest=/usr/lib/systemd/system/{{ item }}.service
+  with_items:
+    - kube-apiserver
+    - kube-controller-manager
+    - kube-scheduler
+  tags: master
+
+- name: 服务载入
+  systemd: daemon_reload=yes name={{ item }}
+  with_items:
+    - docker
+    - flanneld
+    - kube-apiserver
+    - kube-controller-manager
+    - kube-scheduler
+  tags: master
+
+- name: 设置开机启动
+  systemd: name={{ item }} enabled=yes
+  with_items:
+    - docker
+    - flanneld
+    - kube-apiserver
+    - kube-controller-manager
+    - kube-scheduler
+  tags: master
+
+- name: 启动服务
+  systemd: name={{ item }} state=started
+  with_items:
+    - docker
+    - flanneld
+    - kube-apiserver
+    - kube-controller-manager
+    - kube-scheduler
+  tags: master
+
+- name: 创建kubelet-boostrap 角色
+  shell: /opt/kubernetes/bin/kubectl create clusterrolebinding kubelet-bootstrap --clusterrole=system:node-bootstrapper --user=kubelet-bootstrap
+  ignore_errors: yes
+  tags: master

@@ -1,0 +1,9 @@
+[master]
+120.92.116.28   hostname=master
+
+[minions]
+120.92.114.198    hostname=minion-1
+120.92.116.163   hostname=minion-2
+
+[etcd]
+120.92.116.28

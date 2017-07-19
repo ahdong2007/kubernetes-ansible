@@ -1,0 +1,19 @@
+---
+
+- hosts: all
+  roles:
+    - common
+
+- hosts: etcd
+  roles:
+    - etcd
+
+- hosts: master
+  roles:
+    - kubectl
+    - master
+
+- hosts: minions
+  roles:
+    - minions
+

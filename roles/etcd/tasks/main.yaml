@@ -1,0 +1,23 @@
+---
+
+- name: YUM安装ETCD
+  yum: name=etcd state=latest
+
+- name: 设置开启启动ETCD服务
+  service: name=etcd enabled=yes
+
+- name: 拷贝ETCD配置文件
+  template: src=etcd.j2 dest=/etc/etcd/etcd.conf
+
+- name: 启动ETCD服务器
+  service: name=etcd state=started
+
+- name: 创建ETCD目录
+  shell: etcdctl mkdir /kube-centos/network
+  ignore_errors: yes
+  run_once: true
+
+- name: 设置集群子网
+  command: 'etcdctl mk /kube-centos/network/config ''{ "Network": "{{ CLUSTER_CIDR }}", "SubnetLen": 24, "Backend": { "Type": "vxlan" } }'''
+  run_once: true
+  ignore_errors: yes

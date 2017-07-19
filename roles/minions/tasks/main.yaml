@@ -1,0 +1,90 @@
+---
+
+- include: roles/kubectl/tasks/main.yaml
+  tags: minion
+
+- name: 生成bootstrap 文件 1
+  shell: /opt/kubernetes/bin/kubectl config set-cluster kubernetes --certificate-authority=/etc/kubernetes/ssl/ca.pem --embed-certs=true --server=https://{{ MASTER_IP }}:6443 --kubeconfig=bootstrap.kubeconfig
+  tags: minion
+
+- name: 生成bootstrap 文件 2
+  shell: /opt/kubernetes/bin/kubectl config set-credentials kubelet-bootstrap --token={{ BOOTSTRAP_TOKEN }} --kubeconfig=bootstrap.kubeconfig
+  tags: minion
+
+- name: 生成bootstrap 文件 3
+  shell: /opt/kubernetes/bin/kubectl config set-context default --cluster=kubernetes --user=kubelet-bootstrap --kubeconfig=bootstrap.kubeconfig
+  tags: minion
+
+- name: 生成bootstrap 文件 4
+  shell: /opt/kubernetes/bin/kubectl config use-context default --kubeconfig=bootstrap.kubeconfig
+  tags: minion
+
+- name: 移动bootstrap 文件 
+  shell: mv /root/bootstrap.kubeconfig /etc/kubernetes
+  tags: minion
+
+- name: 拷贝kube-proxy 证书文件
+  copy: src={{ item }} dest=/etc/kubernetes/ssl/
+  with_items:
+    - kube-proxy-key.pem
+    - kube-proxy.pem
+  tags: minion
+
+- name: 生成kube-proxy 文件 1
+  shell: /opt/kubernetes/bin/kubectl config set-cluster kubernetes --certificate-authority=/etc/kubernetes/ssl/ca.pem --embed-certs=true --server=https://{{ MASTER_IP }}:6443 --kubeconfig=kube-proxy.kubeconfig 
+  tags: minion
+
+- name: 生成kube-proxy 文件 2
+  shell: /opt/kubernetes/bin/kubectl config set-credentials kube-proxy --client-certificate=/etc/kubernetes/ssl/kube-proxy.pem --client-key=/etc/kubernetes/ssl/kube-proxy-key.pem --embed-certs=true --kubeconfig=kube-proxy.kubeconfig
+  tags: minion
+
+- name: 生成kube-proxy 文件 3
+  shell: /opt/kubernetes/bin/kubectl config set-context default --cluster=kubernetes --user=kube-proxy --kubeconfig=kube-proxy.kubeconfig
+  tags: minion
+
+- name: 生成kube-proxy 文件 4
+  shell: /opt/kubernetes/bin/kubectl config use-context default --kubeconfig=kube-proxy.kubeconfig
+  tags: minion
+
+- name: 移动 kube-proxy 文件
+  shell: mv /root/kube-proxy.kubeconfig /etc/kubernetes
+  tags: minion
+
+- name: 拷贝服务启动文件
+  template: src={{ item }}.j2 dest=/usr/lib/systemd/system/{{ item }}.service
+  with_items:
+    - kube-proxy
+    - kubelet
+  tags: minion
+
+- name: 创建 kube-proxy\kubelet 工作目录
+  file: path=/var/lib/{{ item }} state=directory
+  with_items:
+    - kubelet
+    - kube-proxy
+  tags: minion
+
+- name: 服务重载
+  systemd: daemon_reload=yes name={{ item }}
+  with_items:
+    - kube-proxy
+    - kubelet
+  tags: minion
+
+- name: 开机启动服务
+  systemd: name={{ item }} enabled=yes
+  with_items:
+    - docker
+    - flanneld
+    - kube-proxy
+    - kubelet
+  tags: minion
+
+- name: 启动服务
+  systemd: name={{ item }} state=started
+  with_items:
+    - docker
+    - flanneld
+    - kube-proxy
+    - kubelet
+  tags: minion

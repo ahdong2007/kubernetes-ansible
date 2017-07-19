@@ -1,0 +1,9 @@
+--- 
+
+- name: start docker
+  service: name=docker state=started
+  tags: start_docker
+
+- name: start flannel
+  service: name=flanneld state=started
+  tags: start_flanneld

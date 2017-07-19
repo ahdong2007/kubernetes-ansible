@@ -1,0 +1,42 @@
+---
+
+- name: 拷贝 kubernetes 二进制包
+  get_url: url=https://dl.k8s.io/v1.6.7/kubernetes-server-linux-amd64.tar.gz dest=/opt
+  tags:
+    - kubectl
+
+- name: 解压 kubernetes 程序包
+  unarchive: src=/opt/kubernetes-server-linux-amd64.tar.gz dest=/opt/ copy=no
+  tags:
+    - kubectl
+
+- name: 调整文件路径
+  shell: mv /opt/kubernetes/server/bin /opt/kubernetes/ 
+  ignore_errors: yes
+  tags:
+    - kubectl
+
+- name: 配置kubectl 环境变量
+  lineinfile: path=/etc/profile line='export PATH=$PATH:/opt/kubernetes/bin'
+  tags:
+    - kubectl
+
+- name: 生成kubeconfig 配置文件 1
+  shell: /opt/kubernetes/bin/kubectl config set-cluster kubernetes --certificate-authority=/etc/kubernetes/ssl/ca.pem --embed-certs=true --server=https://{{ MASTER_IP }}:6443
+  tags:
+    - kubectl
+
+- name: 生成kubeconfig 配置文件 2
+  shell: /opt/kubernetes/bin/kubectl config set-credentials admin --client-certificate=/etc/kubernetes/ssl/admin.pem --embed-certs=true --client-key=/etc/kubernetes/ssl/admin-key.pem 
+  tags:
+    - kubectl
+
+- name: 生成kubeconfig 配置文件 3
+  shell: /opt/kubernetes/bin/kubectl config set-context kubernetes --cluster=kubernetes --user=admin 
+  tags:
+    - kubectl
+
+- name: 生成kubeconfig 配置文件 4
+  shell: /opt/kubernetes/bin/kubectl config use-context kubernetes
+  tags:
+    - kubectl

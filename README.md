@@ -29,3 +29,24 @@
 
 即便如此，我们还并没有真正的部署完kubernets。 还需要部署kube-dns、kube-dashboard、ingress不过这些东西，将比之前的安装就简单多了。
 
+安装kube-dns:
+
+1、sed -i 's/__PILLAR__DNS__DOMAIN__/"你的域名（必须与group_vars/all.yaml中配置的一致）"/g' kubedns-controller.yaml 
+
+2、kubectl create -f kubedns-controller.yaml kubedns-svc.yaml kubedns-cm.yaml kubedns-sa.yaml 
+
+3、kubectl get pods --all-namespaces
+
+安装kube-dashboard:
+
+1、kubectl create -f dashboard-service.yaml dashborad-controller.yaml dashboard-rbac.yaml 
+
+2、kubectl create clusterrolebinding cluster-admin --clusterrole=cluster-admin --serviceaccount=kube-system:default
+
+3、kubectl proxy --accept-hosts='.*' --address="对外访问地址,例如：114.220.3.4" 
+
+4、打开浏览器输入 http://114.220.3.4:8001/ui 即可呈现kubenetes dashboard
+
+
+
+

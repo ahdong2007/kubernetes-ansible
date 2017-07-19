@@ -47,6 +47,7 @@
 
 4、打开浏览器输入 http://114.220.3.4:8001/ui 即可呈现kubenetes dashboard
 
+enjoy!!!
 
 
 

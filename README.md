@@ -15,12 +15,14 @@
 
 5、运行全部通过以后，需要手动对minions进行授权。方法如下：
 
-   1、kubectl get csr
+    1、kubectl get csr
    
-   2、kubectl certificate approve csr-wgvgb #csr-wgvgb是kubectl get csr 中的name
+    2、kubectl certificate approve csr-wgvgb #csr-wgvgb是kubectl get csr 中的name
    
-   3、kubectl certificate approve csr-z6t53
+    3、kubectl certificate approve csr-z6t53
 
 6、检查集群状态
-   kubectl get componentstatuses
-   kubectl get nodes
+
+    1、kubectl get componentstatuses
+   
+    2、kubectl get nodes

@@ -1,5 +1,11 @@
 ---
 
+- name: debug
+  debug: msg="cluster_cidr",var={{ CLUSTER_CIDR }}
+
+- name: debug2
+  debug: msg="etcd_install",var={{ ETCD_INSTALL }}
+
 - name: 关闭selinux
   selinux: state=disabled
 

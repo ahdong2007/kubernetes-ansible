@@ -40,7 +40,7 @@
 
 1、kubectl create -f dashboard-service.yaml dashborad-controller.yaml dashboard-rbac.yaml 
 
-2、kubectl create clusterrolebinding cluster-admin --clusterrole=cluster-admin --serviceaccount=kube-system:default
+2、kubectl create clusterrolebinding  add-on-cluster-admin --clusterrole=cluster-admin --serviceaccount=kube-system:default
 
 3、kubectl proxy --accept-hosts='.*' --address="对外访问地址,例如：114.220.3.4" 
 

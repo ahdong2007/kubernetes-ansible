@@ -1,16 +1,13 @@
 ---
 
-- name: debug
-  debug: msg="cluster_cidr",var={{ CLUSTER_CIDR }}
-
-- name: debug2
-  debug: msg="etcd_install",var={{ ETCD_INSTALL }}
-
 - name: 关闭selinux
   selinux: state=disabled
 
 - name: 修改主机名
   hostname: name={{ hostname }}
+
+- name: 更新系统
+  yum: name=*  state=latest
 
 - name: 关闭防火墙
   systemd: name=firewalld state=stopped enabled=no

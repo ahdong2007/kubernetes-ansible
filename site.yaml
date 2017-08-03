@@ -1,12 +1,10 @@
 ---
 
 - hosts: all
-  strategy: debug
   roles:
     - common
 
 - hosts: etcd
-  strategy: debug
   roles:
     - { role: etcd, when: "ETCD_INSTALL == 'yes'" } 
 

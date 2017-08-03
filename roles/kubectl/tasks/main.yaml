@@ -1,7 +1,7 @@
 ---
 
 - name: 拷贝 kubernetes 二进制包
-  get_url: url=https://dl.k8s.io/v1.6.7/kubernetes-server-linux-amd64.tar.gz dest=/opt
+  get_url: url={{ PACKAGE_URL }} dest=/opt
   tags:
     - kubectl
 

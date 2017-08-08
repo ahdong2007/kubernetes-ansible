@@ -8,7 +8,7 @@
 
 注意：如果已经有ETCD服务器，在group_vars/all.yaml中ETCD_INSTALL配置为no， 在ETCD_SERVER_IP 配置已有的ETCD服务IP
 
-     已更新新版本1.7.3
+     kubernetes已更新最新版本v1.7.3
 
 3、配置好目录下的 hosts 文件
 

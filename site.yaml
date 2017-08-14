@@ -17,3 +17,60 @@
   roles:
     - minions
 
+- hosts: master
+  post_tasks:
+    - name: 获取CSR列表
+      shell: /opt/kubernetes/bin/kubectl get csr | sed -n '2,$p' | awk '{print $1}'
+      register: csr_result
+
+    - name: 授权CSR
+      shell: /opt/kubernetes/bin/kubectl certificate approve "{{ item }}"
+      with_items: "{{ csr_result.stdout_lines }}"
+
+    - name: 拷贝kube-dns配置文件
+      template: src={{ item }} dest=/root/
+      with_items:
+        - kubedns-controller.yaml
+        - kubedns-cm.yaml
+        - kubedns-sa.yaml
+        - kubedns-svc.yaml
+
+    - name: 安装kube-dns
+      shell: /opt/kubernetes/bin/kubectl create -f "{{ item }}"
+      with_items:
+        - kubedns-controller.yaml
+        - kubedns-cm.yaml
+        - kubedns-sa.yaml
+        - kubedns-svc.yaml
+
+    - name: 拷贝dashboard文件
+      template: src={{ item }} dest=/root/
+      with_items:
+        - dashboard-rbac.yaml
+        - dashborad-controller.yaml
+        - dashboard-service.yaml
+
+    - name: 安装dashboard
+      shell: /opt/kubernetes/bin/kubectl create -f "{{ item }}"
+      with_items:
+        - dashboard-rbac.yaml
+        - dashborad-controller.yaml
+        - dashboard-service.yaml
+
+    - name: 授权dashborad
+      shell: /opt/kubernetes/bin/kubectl create clusterrolebinding add-on-cluster-admin --clusterrole=cluster-admin --serviceaccount=kube-system:default
+
+    - name: 运行dashborad
+      shell: nohup /opt/kubernetes/bin/kubectl proxy --accept-hosts='.*' --address="{{MASTER_IP}}" &
+
+    - name: 创建ingress 1
+      shell: /opt/kubernetes/bin/kubectl create -f https://raw.githubusercontent.com/kubernetes/ingress/master/examples/rbac/nginx/nginx-ingress-controller-rbac.yml
+
+    - name: 创建ingress 2
+      shell: /opt/kubernetes/bin/kubectl create -f https://raw.githubusercontent.com/kubernetes/ingress/master/examples/rbac/nginx/default-backend.yml
+
+    - name: 创建ingress 3
+      shell: /opt/kubernetes/bin/kubectl create -f https://raw.githubusercontent.com/kubernetes/ingress/master/examples/rbac/nginx/nginx-ingress-controller.yml
+
+    - name: 创建ingress 3
+      shell: kubectl create -f https://raw.githubusercontent.com/kubernetes/ingress/master/examples/rbac/nginx/nginx-ingress-controller-service.yml

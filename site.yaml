@@ -72,5 +72,5 @@
     - name: 创建ingress 3
       shell: /opt/kubernetes/bin/kubectl create -f https://raw.githubusercontent.com/kubernetes/ingress/master/examples/rbac/nginx/nginx-ingress-controller.yml
 
-    - name: 创建ingress 3
-      shell: kubectl create -f https://raw.githubusercontent.com/kubernetes/ingress/master/examples/rbac/nginx/nginx-ingress-controller-service.yml
+    - name: 创建ingress 4
+      shell: /opt/kubernetes/bin/kubectl create -f https://raw.githubusercontent.com/kubernetes/ingress/master/examples/rbac/nginx/nginx-ingress-controller-service.yml

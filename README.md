@@ -10,7 +10,7 @@
 
 3、配置好目录下的 hosts 文件
 
-4、在目录下运行ansible -i hosts site.yaml
+4、在目录下运行ansible-playbook -i hosts site.yaml
 
 5、检查集群状态
 

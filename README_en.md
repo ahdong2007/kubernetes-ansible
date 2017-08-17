@@ -4,6 +4,7 @@ This playbook helps you to set up a Kubernetes cluster on a number of Fedora or 
 Doesn't matter how or where or whatever. Real hardware, VMs, honey badger don't care.
 
 #Requirements
+
 1、To deploy the Kubernetes environment you will need standard Fedora or RHEL/CentOS system.
 
 2、You will need at least 2 (virtual) machines. One will be configured as the Kubernetes master and the remaining node(s) can be configured as minions or deployment nodes
@@ -11,6 +12,7 @@ Doesn't matter how or where or whatever. Real hardware, VMs, honey badger don't 
 3、There is currently no support for multiple master Because it involves generating kubernetes key problem, has not yet been resolved.
 
 #Setup
+
 1、Configure the host ip and hostname in the inventory file.
 
 2、Configure the cluster option in the group_vars/all.yaml file. If the ETCD service already exists, set the etcd_install option to no.

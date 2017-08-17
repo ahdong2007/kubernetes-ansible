@@ -22,11 +22,11 @@ ansible-playbook -i hosts site.yaml
 # Check
 1、get nodes status
 
-   #kubectl get nodes
+    #kubectl get nodes
 
 2、get cluster status
 
-   #kubectl get componentstatuses
+    #kubectl get componentstatuses
 
 # At last
 If you encounter any problems during use, please let me know that I will do my best to help you.
